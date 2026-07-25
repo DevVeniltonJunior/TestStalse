@@ -1,0 +1,129 @@
+{
+  "name": "Ticket Webhook - closed/high",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ticket-event",
+        "options": {}
+      },
+      "id": "0fdf8073-5b1d-4159-aef1-551ce5870452",
+      "name": "Ticket Event Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "76996267-0239-4964-87b9-06a1e87b4600"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "status-closed",
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": "closed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "priority-high",
+              "leftValue": "={{ $json.body.priority }}",
+              "rightValue": "high",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6f051b2f-aba8-4010-9cd2-b8855bbd7b56",
+      "name": "Is Closed or High Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ event: \"ticket_update\", status: $json.body.status, priority: $json.body.priority, ticketId: $json.body.id, receivedAt: $now.toISO() }) }}",
+        "options": {}
+      },
+      "id": "d3e770a2-5766-4e3f-ae63-f2b973826f23",
+      "name": "Log to httpbin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "a2020f39-97ae-48ab-9cdc-d34e396c5c62",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ticket Event Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Closed or High Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Closed or High Priority": {
+      "main": [
+        [
+          {
+            "node": "Log to httpbin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1ad4b7fb-1a6b-4a19-8deb-7db1d89a19b2",
+  "meta": {
+    "instanceId": "9ffbbf9ff9f0363068ab4e62a4791f019ba045730fdac29baf79ac729c3e3cfd"
+  },
+  "nodeGroups": [],
+  "id": "oQb9ZZaL67vskijf",
+  "tags": []
+}
