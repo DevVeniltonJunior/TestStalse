@@ -28,12 +28,6 @@ Antes de executar o projeto, certifique-se de possuir instalado:
 
 Antes de executar o backend, é necessário criar e configurar o ambiente virtual Python dentro da pasta `backend`.
 
-Entre na pasta do backend:
-
-```bash
-cd backend
-````
-
 Crie o ambiente virtual:
 
 ```bash
